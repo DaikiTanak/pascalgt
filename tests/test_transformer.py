@@ -1,4 +1,3 @@
-import pytest
 from pathlib import Path
 
 from src.transformer import GT2Pascal
@@ -35,3 +34,4 @@ class TestGT2Pascal:
 
     def test_transform(self):
         xml = gt2pascal.transform(sample_dict_json, "sample-job-clone")
+        assert xml is not None
