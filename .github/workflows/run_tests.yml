@@ -25,10 +25,6 @@ jobs:
     - name: Install libraries from pip
       run: pip install -r requirements.txt
 
-    - run: conda list
-    - run: pip list
-
     - name: run pytest
-      run: |
-        /opt/conda/bin/conda run pytest
-      working-directory: ./test
+      run: pytest
+      working-directory: ./tests
