@@ -3,9 +3,11 @@ AWS Ground Truth形式のアノテーションファイルとPASCAL-VOC形式を
 
 ## usage
 ```python
+from pathlib import Path
 from transformer import GT2Pascal
-gt2pascal_transformer = GT2Pascal()
-gt2pascal_transformer.transform("/tmp/annotation_001.json")
+
+gt2pascal = GT2Pascal()
+gt2pascal.run(path_manifest=Path("./output.manifest"), dir_output_xml=Path("../output"))
 ```
 
 ## license
