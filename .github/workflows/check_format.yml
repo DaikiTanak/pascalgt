@@ -1,4 +1,4 @@
-name: Python package
+name: Check format
 
 on: [push]
 
@@ -17,4 +17,4 @@ jobs:
           pip install flake8
       - name: Lint with flake8
         run: |
-          flake8 . --count --ignore=E501,W503 --statistics --show-source
+          flake8 . --ignore=E501,W503
