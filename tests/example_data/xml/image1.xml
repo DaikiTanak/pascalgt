@@ -1,0 +1,29 @@
+<annotation>
+    <folder>images</folder>
+    <filename>image1.jpg</filename>
+    <size>
+        <width>1108</width>
+        <height>1477</height>
+        <depth>3</depth>
+    </size>
+    <object>
+        <name>dog</name>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>10</xmin>
+            <ymin>640</ymin>
+            <xmax>498</xmax>
+            <ymax>1103</ymax>
+        </bndbox>
+    </object>
+    <object>
+        <name>cat</name>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>589</xmin>
+            <ymin>777</ymin>
+            <xmax>1100</xmax>
+            <ymax>1136</ymax>
+        </bndbox>
+    </object>
+</annotation>
