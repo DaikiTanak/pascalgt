@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from src.transformer import Pascal2GT, GT2Pascal
+from pascalgt.transformer import Pascal2GT, GT2Pascal
 
 dir_xml = Path("./example_data/xml")
 path_output_manifest = Path("./example_data/manifest/output.manifest")
