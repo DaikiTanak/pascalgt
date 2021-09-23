@@ -27,7 +27,6 @@ gt2pascal = GT2Pascal()
 gt2pascal.run(Path("./output.manifest"), Path("./xml"))
 ```
 
-
 ## license
 The source code is licensed MIT.
 
