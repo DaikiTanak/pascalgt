@@ -1,7 +1,8 @@
 from pathlib import Path
+import pytest
+from src.transformer import Pascal2GT, GT2Pascal
 
-from src.transformer import GT2Pascal
-
+dir_xml = Path("./example_data/xml")
 path_output_manifest = Path("./example_data/manifest/output.manifest")
 sample_dict_json = {"source-ref": "s3://test-ground-truth-object-detection/image1.jpg",
                     "sample-job-clone": {"image_size": [{"width": 1108, "height": 1477, "depth": 3}], "annotations": [
@@ -14,6 +15,27 @@ sample_dict_json = {"source-ref": "s3://test-ground-truth-object-detection/image
                                                   "job-name": "labeling-job/sample-job-clone"}}
 
 gt2pascal = GT2Pascal()
+pascal2gt = Pascal2GT(project_name="test-project",
+                      s3_path="s3://test-project/images")
+
+
+class TestPascal2GT:
+    def test_run(self, tmpdir):
+        path_output_manifest = Path(tmpdir) / "output.manifest"
+        pascal2gt.run(path_output_manifest=path_output_manifest,
+                      dir_xml=dir_xml)
+        assert path_output_manifest.exists()
+
+    @pytest.mark.parametrize("path_xml",
+                             [
+                                 (Path("./example_data/xml/image1.xml")),
+                                 (Path("./example_data/xml/image2.xml")),
+                                 (Path("./example_data/xml/image3.xml")),
+                             ]
+                             )
+    def test_read_pascal_xml(self, path_xml):
+        xml = pascal2gt.read_pascal_xml(path_xml)
+        assert xml is not None
 
 
 class TestGT2Pascal:

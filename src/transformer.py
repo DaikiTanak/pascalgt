@@ -1,19 +1,104 @@
+import datetime
 import json
 from pathlib import Path
 from lxml import etree
+from typing import List
 
 
 class Pascal2GT:
     """
     Transform PASCAL-VOC xml files into ground truth
     """
-    pass
+
+    def __init__(self, project_name: str, s3_path: str):
+        self.project_name = project_name
+        self.s3_path = s3_path  # s3 key of the directory including images
+
+    def run(self, path_output_manifest: Path, dir_xml: Path) -> None:
+        list_xml = []
+        for path_file in dir_xml.iterdir():
+            if path_file.suffix == ".xml":
+                xml = self.read_pascal_xml(path_file)
+                list_xml.append(xml)
+        output_manifest_text = self.aggregate_xml(list_xml)
+        with open(str(path_output_manifest), mode='w') as f:
+            f.write(output_manifest_text)
+        return
+
+    def read_pascal_xml(self, path_xml: Path) -> etree.Element:
+        assert path_xml.exists()
+        xml = etree.parse(str(path_xml))
+        return xml
+
+    def aggregate_xml(self, list_xml: List[etree.Element]) -> str:
+        """
+        aggregate list of xml structure objects into one output.manifest text.
+        """
+        outputText = ""
+        list_output_json_dict = []
+        class_name2class_id_mapping = {}
+
+        for xml in list_xml:
+            output_dict = {}
+
+            filename = xml.find("filename").text
+            size_object = xml.find("size")
+            image_height = int(size_object.find("height").text)
+            image_width = int(size_object.find("width").text)
+            image_depth = int(size_object.find("depth").text)
+
+            output_dict["source-ref"] = f"{self.s3_path}/{filename}"
+            output_dict[self.project_name] = {"image_size": [{"width": image_width,
+                                                              "height": image_height,
+                                                              "depth": image_depth}],
+                                              "annotations": []}
+            output_dict[f"{self.project_name}-metadata"] = {"objects": [],
+                                                            "class-map": {},
+                                                            "type": "groundtruth/object-detection",
+                                                            "human-annotated": "yes",
+                                                            "creation-date": datetime.datetime.now().isoformat(
+                                                                timespec='microseconds'),
+                                                            "job-name": "labeling-job/sample-job-clone"}
+
+            objects = xml.findall("object")
+
+            for annotated_object in objects:
+                class_name = annotated_object.find("name").text
+                if class_name2class_id_mapping.get(class_name) is None:
+                    class_name2class_id_mapping[class_name] = len(class_name2class_id_mapping)
+
+                class_id = class_name2class_id_mapping[class_name]
+
+                bbox_object = annotated_object.find("bndbox")
+                x1 = int(bbox_object.find("xmin").text)
+                x2 = int(bbox_object.find("xmax").text)
+                y1 = int(bbox_object.find("ymin").text)
+                y2 = int(bbox_object.find("ymax").text)
+                bbox_width = x2 - x1
+                bbox_height = y2 - y1
+
+                output_dict[self.project_name]["annotations"].append(
+                    {
+                        "class_id": class_id,
+                        "width": bbox_width,
+                        "top": y1,
+                        "height": bbox_height,
+                        "left": x1,
+                    }
+                )
+            list_output_json_dict.append(output_dict)
+
+        for output_dict in list_output_json_dict:
+            output_dict[self.project_name]["class-map"] = class_name2class_id_mapping
+            outputText += json.dumps(output_dict) + "\n"
+        return outputText
 
 
 class GT2Pascal:
     """
     Transform ground truth files into PASCAL-VOC
     """
+
     def run(self, path_manifest: Path, dir_output_xml: Path) -> None:
         list_json_dict = self.read_manifest(path_manifest)
         project_name = self.extract_project_name(list_json_dict[0])
@@ -87,11 +172,15 @@ class GT2Pascal:
             bndbox = etree.SubElement(obj, "bndbox")
             etree.SubElement(bndbox, "xmin").text = str(left)
             etree.SubElement(bndbox, "ymin").text = str(top)
-            etree.SubElement(bndbox, "xmax").text = str(float(left) + float(width))
-            etree.SubElement(bndbox, "ymax").text = str(float(top) + float(height))
+            etree.SubElement(bndbox, "xmax").text = str(int(left) + int(width))
+            etree.SubElement(bndbox, "ymax").text = str(int(top) + int(height))
         return xml_data
 
 
 if __name__ == "__main__":
+    pascal2gt = Pascal2GT(project_name="test-project",
+                          s3_path="s3://test-project/images")
+    pascal2gt.run(Path("../output/output.manifest"), Path("../tests/example_data/xml/"))
+
     gt2pascal = GT2Pascal()
-    gt2pascal.run(Path("../tests/example_data/output.manifest"), Path("../output"))
+    gt2pascal.run(Path("../tests/example_data/manifest/output.manifest"), Path("../output"))
