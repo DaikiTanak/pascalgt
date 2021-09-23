@@ -14,7 +14,10 @@ class Pascal2GT:
         self.project_name = project_name
         self.s3_path = s3_path  # s3 key of the directory including images
 
-    def run(self, path_output_manifest: Path, dir_xml: Path) -> None:
+    def run(self, path_output_manifest: str, dir_xml: str) -> None:
+        path_output_manifest = Path(path_output_manifest)
+        dir_xml = Path(dir_xml)
+
         list_xml = []
         for path_file in dir_xml.iterdir():
             if path_file.suffix == ".xml":
@@ -99,7 +102,10 @@ class GT2Pascal:
     Transform ground truth files into PASCAL-VOC
     """
 
-    def run(self, path_manifest: Path, dir_output_xml: Path) -> None:
+    def run(self, path_manifest: str, dir_output_xml: str) -> None:
+        path_manifest = Path(path_manifest)
+        dir_output_xml = Path(dir_output_xml)
+
         list_json_dict = self.read_manifest(path_manifest)
         project_name = self.extract_project_name(list_json_dict[0])
         for json_dict in list_json_dict:

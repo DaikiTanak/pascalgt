@@ -21,10 +21,10 @@ pascal2gt = Pascal2GT(project_name="test-project",
 
 class TestPascal2GT:
     def test_run(self, tmpdir):
-        path_output_manifest = Path(tmpdir) / "output.manifest"
+        path_output_manifest = str(Path(tmpdir) / "output.manifest")
         pascal2gt.run(path_output_manifest=path_output_manifest,
-                      dir_xml=dir_xml)
-        assert path_output_manifest.exists()
+                      dir_xml=str(dir_xml))
+        assert Path(path_output_manifest).exists()
 
     @pytest.mark.parametrize("path_xml",
                              [
@@ -45,7 +45,7 @@ class TestGT2Pascal:
         assert len(list_json_dict) == 3
 
     def test_run(self, tmpdir):
-        gt2pascal.run(path_output_manifest, tmpdir)
+        gt2pascal.run(str(path_output_manifest), str(tmpdir))
         assert len(list(Path(tmpdir).iterdir())) == 3
 
     def test_extract_project_name(self):
