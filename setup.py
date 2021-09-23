@@ -1,13 +1,9 @@
 #!/usr/bin/env python
-import os, sys
-import shutil
 import datetime
-
 from setuptools import setup, find_packages
-from setuptools.command.install import install
+
 
 readme = open('README.md').read()
-
 VERSION = '0.0.1' + "_" + datetime.datetime.now().strftime('%Y%m%d%H%M')[2:]
 setup(
     # Metadata
