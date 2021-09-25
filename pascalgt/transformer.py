@@ -14,17 +14,17 @@ class Pascal2GT:
         self.project_name = project_name
         self.s3_path = s3_path  # s3 key of the directory including images
 
-    def run(self, path_output_manifest: str, dir_xml: str) -> None:
-        path_output_manifest = Path(path_output_manifest)
-        dir_xml = Path(dir_xml)
+    def run(self, path_target_manifest: str, path_source_xml_dir: str) -> None:
+        path_target_manifest = Path(path_target_manifest)
+        path_source_xml_dir = Path(path_source_xml_dir)
 
         list_xml = []
-        for path_file in dir_xml.iterdir():
+        for path_file in path_source_xml_dir.iterdir():
             if path_file.suffix == ".xml":
                 xml = self.read_pascal_xml(path_file)
                 list_xml.append(xml)
         output_manifest_text = self.aggregate_xml(list_xml)
-        with open(str(path_output_manifest), mode='w') as f:
+        with open(str(path_target_manifest), mode='w') as f:
             f.write(output_manifest_text)
         return
 
@@ -102,16 +102,16 @@ class GT2Pascal:
     Transform ground truth files into PASCAL-VOC
     """
 
-    def run(self, path_manifest: str, dir_output_xml: str) -> None:
-        path_manifest = Path(path_manifest)
-        dir_output_xml = Path(dir_output_xml)
+    def run(self, path_source_manifest: str, path_target_xml_dir: str) -> None:
+        path_source_manifest = Path(path_source_manifest)
+        path_target_xml_dir = Path(path_target_xml_dir)
 
-        list_json_dict = self.read_manifest(path_manifest)
+        list_json_dict = self.read_manifest(path_source_manifest)
         project_name = self.extract_project_name(list_json_dict[0])
         for json_dict in list_json_dict:
             xml = self.transform(json_dict, project_name)
             path_source_image = self.get_source_image_filename(json_dict)
-            self.save_xml(xml, dir_output_xml / path_source_image.with_suffix(".xml"))
+            self.save_xml(xml, path_target_xml_dir / path_source_image.with_suffix(".xml"))
         return
 
     def read_manifest(self, path_manifest: Path):
