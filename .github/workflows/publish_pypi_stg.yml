@@ -26,3 +26,13 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload --repository testpypi dist/*
+    - name: Initialize pip env
+      run: |
+        pip freeze > uninstall.txt
+        pip uninstall --yes -r uninstall.txt
+        rm uninstall.txt
+        sleep 10s
+    - name: Install the package
+      run: |
+        pip install -i https://test.pypi.org/simple/ pascalgt
+        python -c "import pascalgt"
