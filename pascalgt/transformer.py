@@ -83,10 +83,10 @@ class Pascal2GT:
                 output_dict[self.project_name]["annotations"].append(
                     {
                         "class_id": class_id,
-                        "width": bbox_width,
                         "top": y1,
-                        "height": bbox_height,
                         "left": x1,
+                        "height": bbox_height,
+                        "width": bbox_width,
                     }
                 )
                 output_dict[f"{self.project_name}-metadata"]["objects"].append({"confidence": 0})
@@ -94,7 +94,7 @@ class Pascal2GT:
             list_output_json_dict.append(output_dict)
 
         for output_dict in list_output_json_dict:
-            output_dict[self.project_name]["class-map"] = {str(class_id): str(class_name) for (class_name, class_id) in class_name2class_id_mapping.items()}
+            output_dict[f"{self.project_name}-metadata"]["class-map"] = {str(class_id): str(class_name) for (class_name, class_id) in class_name2class_id_mapping.items()}
             outputText += json.dumps(output_dict, separators=(",", ":")) + "\n"
         return outputText
 
