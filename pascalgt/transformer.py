@@ -61,7 +61,7 @@ class Pascal2GT:
                                                             "human-annotated": "yes",
                                                             "creation-date": datetime.datetime.now().isoformat(
                                                                 timespec='microseconds'),
-                                                            "job-name": "labeling-job/sample-job-clone"}
+                                                            "job-name": f"labeling-job/{self.project_name}"}
 
             objects = xml.findall("object")
 
@@ -89,11 +89,13 @@ class Pascal2GT:
                         "left": x1,
                     }
                 )
+                output_dict[f"{self.project_name}-metadata"]["objects"].append({"confidence": 0})
+
             list_output_json_dict.append(output_dict)
 
         for output_dict in list_output_json_dict:
-            output_dict[self.project_name]["class-map"] = class_name2class_id_mapping
-            outputText += json.dumps(output_dict) + "\n"
+            output_dict[self.project_name]["class-map"] = {str(class_id): str(class_name) for (class_name, class_id) in class_name2class_id_mapping.items()}
+            outputText += json.dumps(output_dict, separators=(",", ":")) + "\n"
         return outputText
 
 
