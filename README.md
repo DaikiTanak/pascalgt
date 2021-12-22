@@ -5,6 +5,8 @@ Transform manifest file of AWS Ground Truth and Pascal VOC xml files mutually.
 ### install
 `pip install pascalgt`
 
+Link to pypi project page: https://pypi.org/project/pascalgt/
+
 ### Pascal VOC to AWS Ground Truth manifest
 ```python
 from pascalgt.transformer import Pascal2GT
