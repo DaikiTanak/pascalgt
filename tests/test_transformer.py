@@ -31,6 +31,7 @@ class TestPascal2GT:
                                  (Path("./example_data/xml/image1.xml")),
                                  (Path("./example_data/xml/image2.xml")),
                                  (Path("./example_data/xml/image3.xml")),
+                                 (Path("./example_data/xml/image4.xml")),
                              ]
                              )
     def test_read_pascal_xml(self, path_xml):

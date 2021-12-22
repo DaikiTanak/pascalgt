@@ -46,8 +46,12 @@ class Pascal2GT:
 
             filename = xml.find("filename").text
             size_object = xml.find("size")
-            image_height = int(size_object.find("height").text)
-            image_width = int(size_object.find("width").text)
+
+            text_image_height = size_object.find("height").text
+            text_image_width = size_object.find("width").text
+
+            image_height = int(float(text_image_height) if "." in text_image_height else text_image_height)
+            image_width = int(float(text_image_width) if "." in text_image_width else text_image_width)
             image_depth = int(size_object.find("depth").text)
 
             output_dict["source-ref"] = f"{self.s3_path}/{filename}"
@@ -73,10 +77,17 @@ class Pascal2GT:
                 class_id = class_name2class_id_mapping[class_name]
 
                 bbox_object = annotated_object.find("bndbox")
-                x1 = int(bbox_object.find("xmin").text)
-                x2 = int(bbox_object.find("xmax").text)
-                y1 = int(bbox_object.find("ymin").text)
-                y2 = int(bbox_object.find("ymax").text)
+
+                text_x1 = bbox_object.find("xmin").text
+                text_x2 = bbox_object.find("xmax").text
+                text_y1 = bbox_object.find("ymin").text
+                text_y2 = bbox_object.find("ymax").text
+
+                x1 = int(float(text_x1) if "." in text_x1 else text_x1)
+                x2 = int(float(text_x2) if "." in text_x2 else text_x2)
+                y1 = int(float(text_y1) if "." in text_y1 else text_y1)
+                y2 = int(float(text_y2) if "." in text_y2 else text_y2)
+
                 bbox_width = x2 - x1
                 bbox_height = y2 - y1
 
