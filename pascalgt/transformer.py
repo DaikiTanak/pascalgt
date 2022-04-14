@@ -2,7 +2,7 @@ import datetime
 import json
 from pathlib import Path
 from lxml import etree
-from typing import List
+from typing import List, Optional
 
 
 class Pascal2GT:
@@ -115,12 +115,12 @@ class GT2Pascal:
     Transform ground truth files into PASCAL-VOC
     """
 
-    def run(self, path_source_manifest: str, path_target_xml_dir: str) -> None:
+    def run(self, path_source_manifest: str, path_target_xml_dir: str, project_name: Optional[str] = None) -> None:
         path_source_manifest = Path(path_source_manifest)
         path_target_xml_dir = Path(path_target_xml_dir)
 
         list_json_dict = self.read_manifest(path_source_manifest)
-        project_name = self.extract_project_name(list_json_dict[0])
+        project_name = project_name if (project_name is not None and isinstance(project_name, str)) else self.extract_project_name(list_json_dict[0])
         for json_dict in list_json_dict:
             xml = self.transform(json_dict, project_name)
             path_source_image = self.get_source_image_filename(json_dict)
@@ -140,10 +140,12 @@ class GT2Pascal:
 
     def save_xml(self, xml_data: etree.Element, path_save: Path) -> None:
         # xmlファイル出力
-        out_xml = etree.tostring(xml_data,
-                                 encoding="utf-8",
-                                 xml_declaration=True,
-                                 pretty_print=True)
+        out_xml = etree.tostring(
+            xml_data,
+            encoding="utf-8",
+            xml_declaration=True,
+            pretty_print=True
+            )
         with open(str(path_save), "wb") as f:
             f.write(out_xml)
         return
@@ -194,12 +196,3 @@ class GT2Pascal:
             etree.SubElement(bndbox, "xmax").text = str(int(left) + int(width))
             etree.SubElement(bndbox, "ymax").text = str(int(top) + int(height))
         return xml_data
-
-
-if __name__ == "__main__":
-    pascal2gt = Pascal2GT(project_name="test-project",
-                          s3_path="s3://test-project/images")
-    pascal2gt.run(Path("../output/output.manifest"), Path("../tests/example_data/xml/"))
-
-    gt2pascal = GT2Pascal()
-    gt2pascal.run(Path("../tests/example_data/manifest/output.manifest"), Path("../output"))
