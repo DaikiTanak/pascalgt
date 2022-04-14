@@ -158,14 +158,20 @@ class GT2Pascal:
 
     def transform(self, gt_json, project_name: str) -> etree.Element:
         """
-        path_gt_file: .manifest file
+        Params:
+        - gt_json: python dict instance with ground truth annotations
+        - project_name: A project name for SageMaker Ground Truth.
+
+        Return: etree.Element instance to express annotations
         """
+        try:
+            boxlabel = gt_json[f"{project_name}"]
+            boxlabel_metadata = gt_json[f"{project_name}-metadata"]
+            class_mapping = boxlabel_metadata["class-map"]
+        except KeyError:
+            raise ValueError("No valid annotations")
 
-        boxlabel_metadata = gt_json[f"{project_name}-metadata"]
-        class_mapping = boxlabel_metadata["class-map"]
         assert boxlabel_metadata["type"] == "groundtruth/object-detection"
-
-        boxlabel = gt_json[f"{project_name}"]
 
         image_size = boxlabel["image_size"][0]
         image_height = image_size["height"]
