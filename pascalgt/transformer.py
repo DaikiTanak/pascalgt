@@ -144,8 +144,7 @@ class GT2Pascal:
             xml_data,
             encoding="utf-8",
             xml_declaration=True,
-            pretty_print=True
-            )
+            pretty_print=True)
         with open(str(path_save), "wb") as f:
             f.write(out_xml)
         return
