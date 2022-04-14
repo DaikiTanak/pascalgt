@@ -7,19 +7,20 @@ path_output_manifest = Path("./example_data/manifest/output.manifest")
 sample_dict_json = {
     "source-ref": "s3://test-ground-truth-object-detection/image1.jpg",
     "sample-job-clone": {
-        "image_size": [{"width": 1108, "height": 1477, "depth": 3}], 
+        "image_size": [{"width": 1108, "height": 1477, "depth": 3}],
         "annotations": [
             {"class_id": 0, "top": 640, "left": 10, "height": 463, "width": 488},
             {"class_id": 1, "top": 777, "left": 589, "height": 359, "width": 511}
-            ]
-            },
+        ]
+    },
     "sample-job-clone-metadata": {
         "objects": [{"confidence": 0}, {"confidence": 0}],
         "class-map": {"0": "dog", "1": "cat"},
         "type": "groundtruth/object-detection", "human-annotated": "yes",
         "creation-date": "2021-09-21T12:55:32.782712",
-        "job-name": "labeling-job/sample-job-clone"}
-        }
+        "job-name": "labeling-job/sample-job-clone"
+    }
+}
 
 gt2pascal = GT2Pascal()
 pascal2gt = Pascal2GT(project_name="test-project", s3_path="s3://test-project/images")

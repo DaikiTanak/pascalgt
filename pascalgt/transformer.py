@@ -158,7 +158,6 @@ class GT2Pascal:
 
     def transform(self, gt_json, project_name: str) -> etree.Element:
         """
-        
         Params:
         - gt_json: python dict instance with ground truth annotations
         - project_name: A project name for SageMaker Ground Truth.
